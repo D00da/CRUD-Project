@@ -1,0 +1,6 @@
+@CRUD_Project_HostAddress = http://localhost:5110
+
+GET {{CRUD_Project_HostAddress}}/api/
+Accept: application/json
+
+###
