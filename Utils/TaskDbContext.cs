@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRUD_Project.Utils
 {
-    public class TaskContext : DbContext
+    public class TaskDbContext : DbContext
     {
-        public TaskContext(DbContextOptions<TaskContext> options) : base(options)
+        public TaskDbContext(DbContextOptions<TaskDbContext> options) : base(options)
         {
         }
 

@@ -2,46 +2,78 @@
 using CRUD_Project.Utils;
 using CRUD_Project.DTOs;
 using CRUD_Project.Models;
+using CRUD_Project.Enums;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace CRUD_Project.Repositories
 {
     public class TaskRepository : ITaskRepository
     {
-        private readonly TaskContext _logger;
+        private readonly TaskDbContext _logger;
 
-        public TaskRepository(TaskContext logger)
+        public TaskRepository(TaskDbContext logger)
         {
             _logger = logger;
         }
 
-        public Task<List<TaskModel>> GetTask(int id)
+        public async Task<TaskModel> GetTask(int id)
         {
-            throw new NotImplementedException();
+            return await _logger.Tasks.Where(x => x.Id == id).FirstOrDefaultAsync(); ;
         }
 
-        public Task<List<TaskModel>> GetAllTasks()
+        public async Task<List<TaskModel>> GetAllTasks()
         {
-            throw new NotImplementedException();
+            return await _logger.Tasks.ToListAsync();
         }
 
-        public Task<List<TaskModel>> GetCompletedTasks()
+        public async Task<List<TaskModel>> GetCompletedTasks()
         {
-            throw new NotImplementedException();
+            return await _logger.Tasks.Where(x => x.status == State.Finished).ToListAsync();
         }
 
-        public Task<List<TaskModel>> AddTask(TaskDTO task)
+        public async Task<TaskModel> AddTask(TaskCreateDTO task)
         {
-            throw new NotImplementedException();
+            var newTask = new TaskModel
+            {
+                Id = _logger.Tasks.Max().Id+1,
+                title = task.title,
+                status = State.Unfinished,
+                dateCreated = DateTime.Today,
+                dateLimit = task.dateLimit
+            };
+
+            await _logger.Tasks.AddAsync(newTask);
+            await _logger.SaveChangesAsync();
+            return newTask;
         }
 
-        public Task<List<TaskModel>> UpdateTask(TaskUpdateDTO task, int id)
+        public async Task<TaskModel> UpdateTask(TaskUpdateDTO task, int id)
         {
-            throw new NotImplementedException();
+            TaskModel taskToUpdate = await GetTask(id);
+            if(taskToUpdate == null)
+            {
+                throw new Exception();
+            }
+            taskToUpdate.title = task.title;
+            taskToUpdate.status = task.status;
+            taskToUpdate.dateLimit = task.dateLimit;
+
+            _logger.Tasks.Update(taskToUpdate);
+            await _logger.SaveChangesAsync();
+            return taskToUpdate;
         }
 
-        public Task<List<TaskModel>> DeleteTask(int id)
+        public async Task<List<TaskModel>> DeleteTask(int id)
         {
-            throw new NotImplementedException();
+            TaskModel taskToDelete = await GetTask(id);
+            if (taskToDelete == null)
+            {
+                throw new Exception();
+            }
+            _logger.Tasks.Remove(taskToDelete);
+            await _logger.SaveChangesAsync();
+            return await _logger.Tasks.ToListAsync();
         }
     }
 }

@@ -6,11 +6,11 @@ namespace CRUD_Project.Models
     public class TaskModel
     {
         [Key]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         public string title { get; set; }
 
-        public State status => State.Unfinished;
+        public State status { get; set; }
 
         public DateTime dateCreated { get; set; }
 

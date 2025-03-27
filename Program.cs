@@ -1,5 +1,8 @@
 
-namespace Projeto_CRUD
+using CRUD_Project.Models;
+using CRUD_Project.Utils;
+
+namespace CRUD_Project
 {
     public class Program
     {
@@ -26,7 +29,6 @@ namespace Projeto_CRUD
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
