@@ -1,5 +1,6 @@
-
+using Microsoft.EntityFrameworkCore;
 using CRUD_Project.Models;
+using CRUD_Project.Repositories;
 using CRUD_Project.Utils;
 
 namespace CRUD_Project
@@ -16,6 +17,10 @@ namespace CRUD_Project
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<TaskDbContext>(
+                options => options.UseNpgsql(builder.Configuration.GetConnectionString("DataBase"))
+            );
 
             var app = builder.Build();
 

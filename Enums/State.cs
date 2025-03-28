@@ -2,7 +2,7 @@ namespace CRUD_Project.Enums
 {
    public enum State
     {
-        Unfinished,
-        Finished
+        Unfinished = 0,
+        Finished = 1
     }
 }

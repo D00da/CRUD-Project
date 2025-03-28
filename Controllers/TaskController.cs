@@ -30,7 +30,7 @@ public class TaskController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while retrieving all Tood it posts", error = ex.Message });
+            return StatusCode(500, new { message = "An error occurred while retrieving target task", error = ex.Message });
         }
     }
 
@@ -49,7 +49,7 @@ public class TaskController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while retrieving all Tood it posts", error = ex.Message });
+            return StatusCode(500, new { message = "An error occurred while retrieving all tasks", error = ex.Message });
         }
     }
 
@@ -68,7 +68,7 @@ public class TaskController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while retrieving all Tood it posts", error = ex.Message });
+            return StatusCode(500, new { message = "An error occurred while retrieving all completed task", error = ex.Message });
         }
     }
 
@@ -91,7 +91,7 @@ public class TaskController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while creating the  crating Todo Item", error = ex.Message });
+            return StatusCode(500, new { message = "An error occurred while creating the new task", error = ex.Message });
 
         }
     }
@@ -124,7 +124,7 @@ public class TaskController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while creating the  crating Todo Item", error = ex.Message });
+            return StatusCode(500, new { message = "An error occurred while updating the target task", error = ex.Message });
 
         }
     }
@@ -144,7 +144,7 @@ public class TaskController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while retrieving all Tood it posts", error = ex.Message });
+            return StatusCode(500, new { message = "An error occurred while deleting the target task", error = ex.Message });
         }
     }
 }

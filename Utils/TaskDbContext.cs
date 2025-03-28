@@ -13,6 +13,7 @@ namespace CRUD_Project.Utils
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfiguration(new TaskMap());
             base.OnModelCreating(modelBuilder);
         }
     }
