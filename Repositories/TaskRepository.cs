@@ -44,8 +44,8 @@ namespace CRUD_Project.Repositories
                 Id = newId,
                 title = task.title,
                 status = State.Unfinished,
-                dateCreated = DateTime.UtcNow.ToLocalTime(),
-                dateLimit = task.dateLimit.ToUniversalTime().ToLocalTime()
+                dateCreated = DateTime.UtcNow,
+                dateLimit = task.dateLimit.ToUniversalTime()
             };
 
             await _logger.Tasks.AddAsync(newTask);

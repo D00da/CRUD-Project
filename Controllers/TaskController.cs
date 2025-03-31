@@ -54,7 +54,7 @@ public class TaskController : ControllerBase
         }
     }
 
-    [HttpGet("status")]
+    [HttpGet("completed")]
     public async Task<IActionResult> GetCompletedTasks()
     {
         try
@@ -76,51 +76,51 @@ public class TaskController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddTask(TaskCreateDTO task)
     {
-        if (task.title == null)
+        if (task.title == null) //Title validation
         {
-            return StatusCode(400, new { message = "title is null" });
+            return StatusCode(400, new { message = "Title is null" });
         }
-        else if (task.dateLimit < DateTime.Today)
+        if (task.dateLimit < DateTime.Today) //Date Limit validation
         {
-            return StatusCode(400, new { message = "dateLimit is before the current date" });
+            return StatusCode(400, new { message = "Date Limit was set to before the current date" });
         }
         try
         {
             await _taskServices.AddTask(task);
-            return StatusCode(201, new { message = "Blog post successfully created" }); //TODO data = addedTask
-
+            //return CreatedAtAction(nameof(AddTask), new { id = .Id });
+        
+            return StatusCode(201, new { message = "Task successfully created" }); //TODO data = addedTask
         }
         catch (Exception ex)
         {
             return StatusCode(500, new { message = "An error occurred while creating the new task", error = ex.Message });
-
         }
     }
 
-    [HttpPut]
+    [HttpPut("{id}")]
     public async Task<IActionResult> UpdateTask(TaskUpdateDTO task, int id)
     {
-        if (task.title == null)
+        if (task.title == null) //Title validation
         {
             return StatusCode(400, new { message = "Title is null" });
         }
-        else if (task.dateLimit < DateTime.Today)
+        if (task.dateLimit < DateTime.Today) //Date Limit validation
         {
             return StatusCode(400, new { message = "End date is set before the current date" });
         }
         var oldTask = await _taskServices.GetTask(id);
-        if (oldTask == null)
+        if (oldTask == null) //ID validation
         {
             return StatusCode(404, new { message = $"No task found with the id: {id}" });
         }
-        if (task.status != Enums.State.Unfinished || task.status != Enums.State.Finished)
+        if (task.status == oldTask.status || (task.status != Enums.State.Unfinished && task.status != Enums.State.Finished)) //State validation; can't be the same
         {
-            return StatusCode(404, new { message = $"Invalid status defininition" });
+            return StatusCode(400, new { message = "Invalid status defininition" });
         }
         try
         {
-            await _taskServices.UpdateTask(task, id);
-            return StatusCode(200, new { message = "Blog post successfully created"}); //TODO data = updatedTask
+            var newTask = await _taskServices.UpdateTask(task, id);
+            return StatusCode(200, new { message = "Blog post successfully created", data=newTask}); 
 
         }
         catch (Exception ex)
@@ -130,7 +130,7 @@ public class TaskController : ControllerBase
         }
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTask(int id)
     {
         try
@@ -141,7 +141,7 @@ public class TaskController : ControllerBase
                 return StatusCode(404, new { message = $"No task found with the id: {id}" });
             }
             await _taskServices.DeleteTask(id);
-            return StatusCode(200, new { message = "Task removed sucessfully" });
+            return StatusCode(204, new { message = "Task removed sucessfully" });
 
         }
         catch (Exception ex)
