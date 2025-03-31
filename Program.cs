@@ -22,6 +22,8 @@ namespace CRUD_Project
                 options => options.UseNpgsql(builder.Configuration.GetConnectionString("DataBase"))
             );
 
+            builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

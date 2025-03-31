@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using CRUD_Project.Models;
 using CRUD_Project.Repositories;
 using CRUD_Project.DTOs;
+using System.Threading.Tasks;
 
 namespace CRUD_Project.Controllers;
 
@@ -103,7 +104,7 @@ public class TaskController : ControllerBase
         {
             return StatusCode(400, new { message = "Title is null" });
         }
-        else if (task.dateLimit < DateTime.Today || task.dateLimit == null)
+        else if (task.dateLimit < DateTime.Today)
         {
             return StatusCode(400, new { message = "End date is set before the current date" });
         }
@@ -112,7 +113,7 @@ public class TaskController : ControllerBase
         {
             return StatusCode(404, new { message = $"No task found with the id: {id}" });
         }
-        if (task.status == oldTask.status || task.status == null)
+        if (task.status != Enums.State.Unfinished || task.status != Enums.State.Finished)
         {
             return StatusCode(404, new { message = $"Invalid status defininition" });
         }
@@ -139,7 +140,8 @@ public class TaskController : ControllerBase
             {
                 return StatusCode(404, new { message = $"No task found with the id: {id}" });
             }
-            return StatusCode(204, new { message = "Task removed sucessfully" });
+            await _taskServices.DeleteTask(id);
+            return StatusCode(200, new { message = "Task removed sucessfully" });
 
         }
         catch (Exception ex)

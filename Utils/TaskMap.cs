@@ -7,7 +7,7 @@ namespace CRUD_Project.Utils
     public class TaskMap : IEntityTypeConfiguration<TaskModel>
     {
         public void Configure(EntityTypeBuilder<TaskModel> builder)
-        {
+        { 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
             builder.Property(x => x.title).IsRequired();

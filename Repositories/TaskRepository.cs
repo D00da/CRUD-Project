@@ -19,7 +19,7 @@ namespace CRUD_Project.Repositories
 
         public async Task<TaskModel> GetTask(int id)
         {
-            return await _logger.Tasks.Where(x => x.Id == id).FirstOrDefaultAsync(); ;
+            return await _logger.Tasks.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<List<TaskModel>> GetAllTasks()
@@ -34,13 +34,18 @@ namespace CRUD_Project.Repositories
 
         public async Task<TaskModel> AddTask(TaskCreateDTO task)
         {
+            int newId = 0;
+            if (_logger.Tasks.Any())
+            {
+                newId = _logger.Tasks.AsEnumerable().Max(t => t.Id) + 1;
+            }
             var newTask = new TaskModel
             {
-                Id = _logger.Tasks.Max().Id+1,
+                Id = newId,
                 title = task.title,
                 status = State.Unfinished,
-                dateCreated = DateTime.Today,
-                dateLimit = task.dateLimit
+                dateCreated = DateTime.UtcNow.ToLocalTime(),
+                dateLimit = task.dateLimit.ToUniversalTime().ToLocalTime()
             };
 
             await _logger.Tasks.AddAsync(newTask);
