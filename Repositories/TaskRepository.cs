@@ -10,35 +10,36 @@ namespace CRUD_Project.Repositories
 {
     public class TaskRepository : ITaskRepository
     {
-        private readonly TaskDbContext _logger;
+        private readonly TaskDbContext _context;
 
-        public TaskRepository(TaskDbContext logger)
+        public TaskRepository(TaskDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public async Task<TaskModel> GetTask(int id)
+        public async Task<TaskModel?> GetTask(int id)
         {
-            return await _logger.Tasks.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return await _context.Tasks.FindAsync(id);
         }
 
         public async Task<List<TaskModel>> GetAllTasks()
         {
-            return await _logger.Tasks.ToListAsync();
+            return await _context.Tasks.ToListAsync();
         }
 
         public async Task<List<TaskModel>> GetCompletedTasks()
         {
-            return await _logger.Tasks.Where(x => x.status == State.Finished).ToListAsync();
+            return await _context.Tasks.Where(x => x.status == State.Finished).ToListAsync();
         }
 
         public async Task<TaskModel> AddTask(TaskCreateDTO task)
         {
             int newId = 0;
-            if (_logger.Tasks.Any())
+            if (_context.Tasks.Any())
             {
-                newId = _logger.Tasks.AsEnumerable().Max(t => t.Id) + 1;
+                newId = _context.Tasks.AsEnumerable().Max(t => t.Id) + 1;
             }
+
             var newTask = new TaskModel
             {
                 Id = newId,
@@ -48,37 +49,27 @@ namespace CRUD_Project.Repositories
                 dateLimit = task.dateLimit.ToUniversalTime()
             };
 
-            await _logger.Tasks.AddAsync(newTask);
-            await _logger.SaveChangesAsync();
-            return newTask;
+            var result = await _context.Tasks.AddAsync(newTask);
+            await _context.SaveChangesAsync();
+            return result.Entity;
         }
 
-        public async Task<TaskModel> UpdateTask(TaskUpdateDTO task, int id)
+        public async Task<TaskModel> UpdateTask(TaskModel oldTask, TaskUpdateDTO task)
         {
-            TaskModel taskToUpdate = await GetTask(id);
-            if(taskToUpdate == null)
-            {
-                throw new Exception();
-            }
-            taskToUpdate.title = task.title;
-            taskToUpdate.status = task.status;
-            taskToUpdate.dateLimit = task.dateLimit;
+            oldTask.title = task.title;
+            oldTask.status = task.status;
+            oldTask.dateLimit = task.dateLimit;
 
-            _logger.Tasks.Update(taskToUpdate);
-            await _logger.SaveChangesAsync();
-            return taskToUpdate;
+            var result = _context.Tasks.Update(oldTask);
+            await _context.SaveChangesAsync();
+            return result.Entity;
         }
 
-        public async Task<List<TaskModel>> DeleteTask(int id)
+        public async Task<bool> DeleteTask(TaskModel task)
         {
-            TaskModel taskToDelete = await GetTask(id);
-            if (taskToDelete == null)
-            {
-                throw new Exception();
-            }
-            _logger.Tasks.Remove(taskToDelete);
-            await _logger.SaveChangesAsync();
-            return await _logger.Tasks.ToListAsync();
+            var result = _context.Tasks.Remove(task);
+            await _context.SaveChangesAsync();
+            return result.State == EntityState.Detached;
         }
     }
 }

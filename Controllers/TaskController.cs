@@ -3,6 +3,8 @@ using CRUD_Project.Models;
 using CRUD_Project.Repositories;
 using CRUD_Project.DTOs;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace CRUD_Project.Controllers;
 
@@ -16,17 +18,18 @@ public class TaskController : ControllerBase
         _taskServices = taskServices;
     }
 
-    [HttpGet("{id}")]
+    [HttpGet]
+    [Route("{id}", Name = "GetTask")]
     public async Task<IActionResult> GetTask(int id)
     {
         try
         {
-            var taskId = await _taskServices.GetTask(id);
-            if (taskId == null)
+            var task = await _taskServices.GetTask(id);
+            if (task == null)
             {
-                return StatusCode(404, new { message = $"No task found with the id: {id}" });
+                return NotFound(new { message = $"No task found with the id: {id}" });
             }
-            return StatusCode(200, new { message = "Successfully retrieved all blog posts", data = taskId });
+            return Ok(new { message = "Successfully retrieved all blog posts", data = task });
 
         }
         catch (Exception ex)
@@ -41,11 +44,7 @@ public class TaskController : ControllerBase
         try
         {
             var taskList = await _taskServices.GetAllTasks();
-            if (taskList == null || !taskList.Any())
-            {
-                return StatusCode(404, new { message = "No tasks found" });
-            }
-            return StatusCode(200, new { message = "Successfully retrieved all blog posts", data = taskList });
+            return Ok(new { message = "Successfully retrieved all blog posts", data = taskList });
 
         }
         catch (Exception ex)
@@ -60,11 +59,7 @@ public class TaskController : ControllerBase
         try
         {
             var taskList = await _taskServices.GetCompletedTasks();
-            if (taskList == null || !taskList.Any())
-            {
-                return StatusCode(404, new { message = "No tasks found" });
-            }
-            return StatusCode(200, new { message = "Successfully retrieved all blog posts", data = taskList });
+            return Ok(new { message = "Successfully retrieved all blog posts", data = taskList });
 
         }
         catch (Exception ex)
@@ -78,18 +73,17 @@ public class TaskController : ControllerBase
     {
         if (task.title == null) //Title validation
         {
-            return StatusCode(400, new { message = "Title is null" });
+            return BadRequest(new { message = "Title is null" });
         }
         if (task.dateLimit < DateTime.Today) //Date Limit validation
         {
-            return StatusCode(400, new { message = "Date Limit was set to before the current date" });
+            return BadRequest(new { message = "Date Limit was set to before the current date" });
         }
+
         try
         {
-            await _taskServices.AddTask(task);
-            //return CreatedAtAction(nameof(AddTask), new { id = .Id });
-        
-            return StatusCode(201, new { message = "Task successfully created" }); //TODO data = addedTask
+            var newTask = await _taskServices.AddTask(task);
+            return CreatedAtAction("GetTask", new { id = newTask.Id }, task);
         }
         catch (Exception ex)
         {
@@ -102,31 +96,32 @@ public class TaskController : ControllerBase
     {
         if (task.title == null) //Title validation
         {
-            return StatusCode(400, new { message = "Title is null" });
+            return BadRequest(new { message = "Title is null" });
         }
-        if (task.dateLimit < DateTime.Today) //Date Limit validation
+        if (task.dateLimit < DateTime.Today) // Date Limit validation
         {
-            return StatusCode(400, new { message = "End date is set before the current date" });
+            return BadRequest(new { message = "End date is set before the current date" });
         }
+        
         var oldTask = await _taskServices.GetTask(id);
+
         if (oldTask == null) //ID validation
         {
-            return StatusCode(404, new { message = $"No task found with the id: {id}" });
+            return NotFound(new { message = $"No task found with the id: {id}" });
         }
-        if (task.status == oldTask.status || (task.status != Enums.State.Unfinished && task.status != Enums.State.Finished)) //State validation; can't be the same
+        if (task.status == oldTask.status || (int)task.status > 1) //State validation; can't be the same as previous
         {
-            return StatusCode(400, new { message = "Invalid status defininition" });
+            return BadRequest(new { message = "Invalid status defininition" });
         }
+
         try
         {
-            var newTask = await _taskServices.UpdateTask(task, id);
-            return StatusCode(200, new { message = "Blog post successfully created", data=newTask}); 
-
+            var newTask = await _taskServices.UpdateTask(oldTask, task);
+            return Ok(new { message = "Blog post successfully created", data=newTask}); 
         }
         catch (Exception ex)
         {
             return StatusCode(500, new { message = "An error occurred while updating the target task", error = ex.Message });
-
         }
     }
 
@@ -138,10 +133,14 @@ public class TaskController : ControllerBase
             var targetTask = await _taskServices.GetTask(id);
             if (targetTask == null)
             {
-                return StatusCode(404, new { message = $"No task found with the id: {id}" });
+                return NotFound(new { message = $"No task found with the id: {id}" });
             }
-            await _taskServices.DeleteTask(id);
-            return StatusCode(204, new { message = "Task removed sucessfully" });
+            var isDeleted = await _taskServices.DeleteTask(targetTask);
+            if (!isDeleted)
+            {
+                return NotFound(new { message = $"Failed to delete task with the id: {id}" });
+            }
+            return NoContent();
 
         }
         catch (Exception ex)
