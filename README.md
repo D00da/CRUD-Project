@@ -87,7 +87,7 @@ Adds a new task to the database. **NOTE**: Only "title" and "dateLimit" can be a
 
 | Parameter   | Type       | Description                                   |
 | :---------- | :--------- | :------------------------------------------ |
-| `id`      | `int` | **Obrigatório**. O ID do item que você quer |
+| `id`      | `int` | **Required**. The ID from the task you want to delete|
 
 
 
