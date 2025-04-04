@@ -7,5 +7,6 @@ namespace CRUD_Project.DTOs
         public string title { get; set; }
         public DateTime dateLimit { get; set; }
         public State status { get; set; }
+        public int userId { get; set; }
     }
 }

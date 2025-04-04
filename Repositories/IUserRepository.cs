@@ -7,6 +7,7 @@ namespace CRUD_Project.Repositories
     {
         Task<UserModel?> GetUser(int id);
         Task<List<UserModel>> GetAllUsers();
+        Task<List<TaskModel>> GetAllUserTasks(int id);
         Task<UserModel> AddUser(UserDTO user);
         Task<UserModel> UpdateUser(UserModel oldUser, UserDTO user);
         Task<bool> DeleteUser(UserModel task);

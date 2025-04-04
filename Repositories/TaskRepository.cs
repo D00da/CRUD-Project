@@ -19,17 +19,24 @@ namespace CRUD_Project.Repositories
 
         public async Task<TaskModel?> GetTask(int id)
         {
-            return await _context.Tasks.FindAsync(id);
+            return await _context.Tasks
+                .Include(x => x.user)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<List<TaskModel>> GetAllTasks()
         {
-            return await _context.Tasks.ToListAsync();
+            return await _context.Tasks
+                .Include(x => x.user)
+                .ToListAsync();
         }
 
         public async Task<List<TaskModel>> GetCompletedTasks()
         {
-            return await _context.Tasks.Where(x => x.status == State.Finished).ToListAsync();
+            return await _context.Tasks
+                .Include(x => x.user)
+                .Where(x => x.status == State.Finished)
+                .ToListAsync();
         }
 
         public async Task<TaskModel> AddTask(TaskCreateDTO task)
@@ -46,7 +53,8 @@ namespace CRUD_Project.Repositories
                 title = task.title,
                 status = State.Unfinished,
                 dateCreated = DateTime.UtcNow,
-                dateLimit = task.dateLimit.ToUniversalTime()
+                dateLimit = task.dateLimit.ToUniversalTime(),
+                userId = task.userId
             };
 
             var result = await _context.Tasks.AddAsync(newTask);
@@ -59,6 +67,7 @@ namespace CRUD_Project.Repositories
             oldTask.title = task.title;
             oldTask.status = task.status;
             oldTask.dateLimit = task.dateLimit;
+            oldTask.userId = task.userId;
 
             var result = _context.Tasks.Update(oldTask);
             await _context.SaveChangesAsync();

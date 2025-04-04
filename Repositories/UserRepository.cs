@@ -26,6 +26,14 @@ namespace CRUD_Project.Repositories
             return await _context.Users.ToListAsync();
         }
 
+        public async Task<List<TaskModel>> GetAllUserTasks(int id)
+        {
+            return await _context.Tasks
+                .Include(x => x.user)
+                .Where(x => x.userId == id)
+                .ToListAsync();
+        }
+
         public async Task<UserModel> AddUser(UserDTO user)
         {
             int newId = 0;

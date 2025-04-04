@@ -49,6 +49,21 @@ public class UserController : ControllerBase
         }
     }
 
+    [HttpGet("tasks")]
+    public async Task<IActionResult> GetAllUserTasks(int id)
+    {
+        try
+        {
+            var taskList = await _userServices.GetAllUserTasks(id);
+            return Ok(new { message = "Successfully retrieved all users", data = taskList });
+
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while retrieving all users", error = ex.Message });
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> AddUser(UserDTO user)
     {

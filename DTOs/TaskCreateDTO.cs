@@ -4,5 +4,7 @@
     {
         public string title { get; set; }
         public DateTime dateLimit { get; set; }
+
+        public int userId { get; set; }
     }
 }
