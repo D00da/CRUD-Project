@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CRUD_Project.Migrations
 {
-    [DbContext(typeof(TaskDbContext))]
-    partial class TaskDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(TaskSystemDbContext))]
+    partial class TaskSystemDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -26,7 +26,7 @@ namespace CRUD_Project.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("serial");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -37,15 +37,46 @@ namespace CRUD_Project.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("status")
-                        .HasColumnType("integer");
+                        .HasColumnType("int");
 
                     b.Property<string>("title")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("userId")
+                        .HasColumnType("serial");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("userId");
+
                     b.ToTable("Tasks");
+                });
+
+            modelBuilder.Entity("CRUD_Project.Models.UserModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("serial");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("CRUD_Project.Models.TaskModel", b =>
+                {
+                    b.HasOne("CRUD_Project.Models.UserModel", "user")
+                        .WithMany()
+                        .HasForeignKey("userId");
+
+                    b.Navigation("user");
                 });
 #pragma warning restore 612, 618
         }

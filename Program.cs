@@ -18,11 +18,12 @@ namespace CRUD_Project
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContext<TaskDbContext>(
+            builder.Services.AddDbContext<TaskSystemDbContext>(
                 options => options.UseNpgsql(builder.Configuration.GetConnectionString("DataBase"))
             );
 
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             var app = builder.Build();
 

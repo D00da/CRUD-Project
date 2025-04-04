@@ -22,6 +22,8 @@ namespace CRUD_Project.Utils
                 .IsRequired();
             builder.Property(x => x.dateCreated).IsRequired();
             builder.Property(x => x.dateLimit).IsRequired();
+            builder.Property(x => x.userId);
+            builder.HasOne(x => x.user);
         }
     }
 }

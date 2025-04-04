@@ -10,9 +10,9 @@ namespace CRUD_Project.Repositories
 {
     public class TaskRepository : ITaskRepository
     {
-        private readonly TaskDbContext _context;
+        private readonly TaskSystemDbContext _context;
 
-        public TaskRepository(TaskDbContext context)
+        public TaskRepository(TaskSystemDbContext context)
         {
             _context = context;
         }

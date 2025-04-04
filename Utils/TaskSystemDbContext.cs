@@ -3,17 +3,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRUD_Project.Utils
 {
-    public class TaskDbContext : DbContext
+    public class TaskSystemDbContext : DbContext
     {
-        public TaskDbContext(DbContextOptions<TaskDbContext> options) : base(options)
+        public TaskSystemDbContext(DbContextOptions<TaskSystemDbContext> options) : base(options)
         {
         }
 
         public DbSet<TaskModel> Tasks { get; set; }
 
+        public DbSet<UserModel> Users { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new TaskMap());
+            modelBuilder.ApplyConfiguration(new UserMap());
             base.OnModelCreating(modelBuilder);
         }
     }

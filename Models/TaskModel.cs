@@ -15,5 +15,9 @@ namespace CRUD_Project.Models
         public DateTime dateCreated { get; set; }
 
         public DateTime? dateLimit { get; set; }
+
+        public int? userId { get; set; }
+
+        public virtual UserModel? user { get; set; }
     }
 }
